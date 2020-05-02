@@ -17,7 +17,7 @@ using namespace std;
 
 int sock = 0, valread;
 struct sockaddr_in serv_addr;
-char *auth = "[UniPager-Dummy v1.0.3 DO4LR VzaS6FEJA7mEJN4FEXMM]\n";
+char *auth = "[UniPager-Dummy v1.0.3 call verygoodauthkey]\n";
 char buffer[1024] = {0};
 char buffer_msg;
 
