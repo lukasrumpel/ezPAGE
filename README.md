@@ -7,4 +7,4 @@ The POCSAG generating library is based on ON1ARFs, but modified. You can generat
 
 ezPOC8 can be connected via USB or TTL UART.
 
-The best: it can be build under 20€!
+The best: it can be build for under 20€!
