@@ -91,7 +91,7 @@ valread = read( sock , buffer, 1024);
 
     send(sock , time5 , strlen(time5) , 0 );
     printf("String gesendet: %s\n", time5);
-    //nach dem 5. vergleich kommt eine Nachricht mit den Timeslots
+    
     valread = read( sock , buff_end, 1024);
     printf("Zeit: %s\n",buff_end);
     send(sock, akn, strlen(akn), 0);
@@ -117,7 +117,7 @@ char* get_msg(void){
 
     if(valread >0){
         msg = strtok(buffer, "\n");
-        //printf("Nachricht: %s\n", msg);
+        
         return msg;
     }
 
@@ -145,13 +145,7 @@ void msg_proc(char* msg){
     sprintf(msg_puff, "%s", meldung);
 
     printf("RIC: %d\n TX_FLAG: %d\n\n", ric, msg_type);
-    //callback_buff = strtok(buffer, " ");
-    //sprintf(callback_buff, "%s +\n", callback_buff);
-    //printf("Break1 \n");
     akn_incr(msg);
-    //printf("Break1 \n");
-    //printf("%s\n", msg_ret);
-    //send(sock, callback_buff, strlen(callback_buff), 0);
     send(sock, akn_msg, strlen(akn_msg), 0);
     printf("%s \n", akn_msg);
     msg_type = 0;
@@ -183,7 +177,6 @@ void akn_incr(char* msg){
     dig2 = strtol(buff2+2, NULL, 16);
 
 
-    //printf("%d %d \n", dig1, dig2);
 
     if(dig1 < 1 && dig2 < 15){
     dig2++;
