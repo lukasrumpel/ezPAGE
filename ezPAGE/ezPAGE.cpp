@@ -159,7 +159,6 @@ void kommando_dapnet(char *adresse, char *subric, char* wdh, char *Nachricht, ch
     else{
         RS232_cputs(cp, cmd);
         std::this_thread::sleep_for(std::chrono::seconds(1));
-        //std::this_thread::sleep_for(std::chrono::milliseconds(500));
         time(&zeitp);
         timeout = localtime(&zeitp);
         start = timeout->tm_sec;
@@ -463,7 +462,7 @@ strcpy(c_comport, comport.c_str());
         cout << "Wiederholungen: ";
         cin >> wdh_n;
         cout << "Nachricht: "<< ANSI_COLOR_RESET;
-        std::getline(std::cin >> std::ws, Nachricht); //Einlesen eines Strings mit Leerzeichen
+        std::getline(std::cin >> std::ws, Nachricht);
         cout << Nachricht << endl << endl << endl;
         c_adr = new char[adr.length()+1];
         strcpy(c_adr, adr.c_str());
@@ -499,7 +498,7 @@ cout << "Subric: ";
 cin >>subr;
 
 cout << "Nachricht: "<< ANSI_COLOR_RESET;
-std::getline(std::cin >> std::ws, Nachricht); //Einlesen eines Strings mit Leerzeichen
+std::getline(std::cin >> std::ws, Nachricht);
 cout << Nachricht << endl << endl << endl;
 c_adr = new char[adr.length()+1];
 strcpy(c_adr, adr.c_str());
@@ -544,7 +543,6 @@ void DAPNET_modus(char *com){
 
 
     printf("SEkunden zum senden: Slot1: %d - %d  Slot2: %d - %d  Slot3: %d - %d \n\n", sek1_s, sek1_e, sek2_s, sek2_e, sek3_s, sek3_e);
-    //ab hier kommen die Meldungen
 
     while(1){
     printf("Nachrichten werden geholt!\n");
