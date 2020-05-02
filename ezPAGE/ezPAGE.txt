@@ -1,0 +1,4 @@
+This is ezPAGE the Software for controlling ezPOC8. It has the ability to connect to the DAPNET. 
+Use ezPAGE -h for help/ further information.
+Credentials for your DAPNET transmitter account are written in the DAPNET.h auth-String (https://hampager.de/dokuwiki/doku.php?id=dapnetprotocol).
+Just compile ist with the g++ command.
