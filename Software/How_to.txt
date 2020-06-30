@@ -8,6 +8,6 @@
 +++flashing the Firmware+++
  -copy POCSAG.cpp and POCSAG.h to your libraries Folder
  -unzip RadioHead to your libraries Folder (.../libraries/RadioHead)
- -flash the Firmware with an ISP Programmer to the Board
+ -flash the Firmware with an ISP Programmer to the Board (!!!ATMega328 3.3V 8Mhz!!!)
  
 +++finished+++
