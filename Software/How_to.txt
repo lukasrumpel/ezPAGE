@@ -1,0 +1,13 @@
++++programming the EEPROM:+++
+ -open and modify in Arduino IDE
+ -write the Sketch to the ezPOC8 Board (with ISP Programmer)
+ 
++++programming the ATTiny85 (Watchdog for the System)+++
+  -programm with an Uno as ISP 
+  
++++flashing the Firmware+++
+ -copy POCSAG.cpp and POCSAG.h to your libraries Folder
+ -unzip RadioHead to your libraries Folder (.../libraries/RadioHead)
+ -flash the Firmware with an ISP Programmer to the Board
+ 
++++finished+++
