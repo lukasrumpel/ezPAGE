@@ -17,7 +17,7 @@ using namespace std;
 
 int sock = 0, valread;
 struct sockaddr_in serv_addr;
-char *auth = "[UniPager-Dummy v1.0.3 call verygoodauthkey]\n";
+char *auth = "[UniPager-Dummy v1.0.3 DO4LR VzaS6FEJA7mEJN4FEXMM]\n";
 char buffer[1024] = {0};
 char buffer_msg;
 
@@ -44,6 +44,7 @@ int sek1_s, sek2_s, sek3_s;
 int sek1_e, sek2_e, sek3_e;
 struct tm *tm_now;
 time_t time_now;
+int stunde_voll = 0;
 
 int dapnet_ric;
 int dapnet_tx_flag;
@@ -55,6 +56,7 @@ void time_dummy(void);
 void get_timeslot(void);
 
 int con_open(void);
+int con_close(void);
 int hex_to_dec(char *hex);
 char* get_msg(void);
 void msg_proc(char* msg);
