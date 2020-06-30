@@ -125,7 +125,7 @@ void kommando(char *adresse, char *subric, char* wdh, char *Nachricht, char *com
                 for (int i = 0; i < 1000; i++){
                     buff[i] = buffer_e[i];
                 }
-                if(strstr(buff, eot) != 0){
+                if((strstr(buff, eot) || strstr(buff, "Format") || strstr(buff, "\0")) != 0){
                     cout << "\n***Uebertragung beendet!***" << endl;
                     break;
                 }
@@ -157,6 +157,7 @@ void kommando_dapnet(char *adresse, char *subric, char* wdh, char *Nachricht, ch
         cerr << "Fehler beim Oeffnen der seriellen Schnittstelle!";
     }
     else{
+        wait_until_timeslot();
         RS232_cputs(cp, cmd);
         std::this_thread::sleep_for(std::chrono::seconds(1));
         time(&zeitp);
@@ -358,6 +359,7 @@ void nachrichten_bearbeitung_dapnet(char *adresse, char *subric, char * wdh_n, c
 
          zeichen = nachricht_laenge(adresse);
         if(strlen(Nachricht) < zeichen){
+
         kommando_dapnet(adresse, subric, wdh_n, Nachricht, comport);
         }
 
@@ -375,8 +377,10 @@ void nachrichten_bearbeitung_dapnet(char *adresse, char *subric, char * wdh_n, c
         char *cs2 = new char[s2.length() + 1];
         strcpy(cs2, s2.c_str());
         for(int i = 0; i < wdh+1; i++){
+
         kommando_dapnet(adresse, subric, "0", cs1,  comport);
         std::this_thread::sleep_for(std::chrono::seconds(1));
+
         kommando_dapnet(adresse, subric, "0", cs2,  comport);
         std::this_thread::sleep_for(std::chrono::seconds(1));
         cout << endl;
@@ -396,10 +400,13 @@ void nachrichten_bearbeitung_dapnet(char *adresse, char *subric, char * wdh_n, c
         char *cs3 = new char[s3.length() + 1];
         strcpy(cs3, s3.c_str());
         for(int i = 0; i < wdh+1; i++){
+
         kommando_dapnet(adresse, subric, "0", cs1,  comport);
         std::this_thread::sleep_for(std::chrono::seconds(1));
+
         kommando_dapnet(adresse, subric, "0", cs2,  comport);
         std::this_thread::sleep_for(std::chrono::seconds(1));
+
         kommando_dapnet(adresse, subric, "0", cs3,  comport);
         std::this_thread::sleep_for(std::chrono::seconds(1));
         cout << endl;
@@ -423,10 +430,13 @@ void nachrichten_bearbeitung_dapnet(char *adresse, char *subric, char * wdh_n, c
         char *cs4 = new char[s4.length() + 1];
         strcpy(cs4, s4.c_str());
         for(int i = 0; i < wdh+1; i++){
+
         kommando_dapnet(adresse, subric, "0", cs1,  comport);
         std::this_thread::sleep_for(std::chrono::seconds(1));
+
         kommando_dapnet(adresse, subric, "0", cs2,  comport);
         std::this_thread::sleep_for(std::chrono::seconds(1));
+
         kommando_dapnet(adresse, subric, "0", cs3,  comport);
         std::this_thread::sleep_for(std::chrono::seconds(1));
         kommando_dapnet(adresse, subric, "0", cs4, comport);
@@ -544,10 +554,11 @@ void DAPNET_modus(char *com){
 
     printf("SEkunden zum senden: Slot1: %d - %d  Slot2: %d - %d  Slot3: %d - %d \n\n", sek1_s, sek1_e, sek2_s, sek2_e, sek3_s, sek3_e);
 
+
     while(1){
     printf("Nachrichten werden geholt!\n");
     message = get_msg();
-
+    if(message != NULL){
     printf("Systemnachricht: %s \n", message);
 
     msg_proc(message);
@@ -558,19 +569,25 @@ void DAPNET_modus(char *com){
     sprintf(ric, "%d", adresse);
     senden = get_tx_flag();
     printf("RIC: %d TX_FLAG: %d\n\n", adresse, senden );
-    if(senden == 6 && (adresse == 2504 || adresse == 200 ||adresse == 208 || adresse == 224 || adresse == 216)){//&& adresse == 270914
-     nachrichten_bearbeitung_dapnet(ric, func, "0", Nachricht, com);
+    if(senden == 6 && (adresse == 2504 || adresse == 200 ||adresse == 208 || adresse == 224 || adresse == 216)){
+     //nachrichten_bearbeitung_dapnet(ric, func, "0", Nachricht, com);
+    }
+    else if((stunde_voll == 1) && (senden == 6 && (adresse == 2504 || adresse == 200 ||adresse == 208 || adresse == 224 || adresse == 216))){
+        nachrichten_bearbeitung_dapnet(ric, func, "0", Nachricht, com);
     }
     else if(senden == 6){
-        wait_until_timeslot();
+        //wait_until_timeslot();
         nachrichten_bearbeitung_dapnet(ric, func, "0", Nachricht, com);
     }
     printf("+++++++++++++++++++++++++++++++++++++++++++++++++++\n\n");
     Nachricht[0] = '\0';
     system("sleep 1s");
     }
+    else{
+      con_close();
+    }
+    }
 
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------
-
