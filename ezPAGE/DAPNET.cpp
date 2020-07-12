@@ -12,31 +12,27 @@
 using namespace std;
 
 int con_open(void){
-if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    {
+	
+	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0){
         printf("\n Socket creation error \n");
         return -1;
     }
 
-
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(PORT);
 
-
-    if(inet_pton(AF_INET, MASTER_IP, &serv_addr.sin_addr)<=0)
-    {
+    if(inet_pton(AF_INET, MASTER_IP, &serv_addr.sin_addr)<=0){
         printf("\nInvalid address/ Address not supported \n");
         return -1;
     }
 
-    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-    {
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0){
         printf("\nConnection Failed \n");
         return -1;
     }
 
     send(sock , auth , strlen(auth) , 0 );
-    printf("Auth message sent %s\n", auth);
+    printf("Auth message sent [%s]\n", auth);
     return 0;
 }
 
@@ -45,7 +41,8 @@ int con_close(void){
 }
 
 void time_dummy(void){
-valread = read( sock , buffer, 1024);
+	valread = read( sock , buffer, 1024);
+	
     printf("%s\n",buffer );
     buffer[strlen(buffer)-1] = '\0';
     strcpy(time1, buffer);
@@ -102,18 +99,18 @@ valread = read( sock , buffer, 1024);
 
 
 void get_timeslot(){
- valread = read( sock , buff_ts, 1024);
+	valread = read( sock , buff_ts, 1024);
+	
     if (valread > 0){
-    printf("Timeslot: %s \n",buff_ts );
+		printf("Timeslot: %s \n",buff_ts );
     }
-    send(sock, akn, strlen(akn), 0);
+    
+	send(sock, akn, strlen(akn), 0);
 }
 
 char* get_msg(void){
     char *msg;
-
-
-
+    
     buffer[0] = '\0';
     valread = read(sock, buffer, 1024);
 
@@ -131,6 +128,7 @@ void msg_proc(char* msg){
     int msg_type;
     char *meldung;
     char *msg_ret;
+    
     strptr = strtok(buffer, " :");
     strptr = strtok(NULL, " :");
     msg_type = hex_to_dec(strptr);
@@ -147,13 +145,8 @@ void msg_proc(char* msg){
     sprintf(msg_puff, "%s", meldung);
 
     printf("RIC: %d\n TX_FLAG: %d\n\n", ric, msg_type);
-    //callback_buff = strtok(buffer, " ");
-    //sprintf(callback_buff, "%s +\n", callback_buff);
-    //printf("Break1 \n");
     akn_incr(msg);
-    //printf("Break1 \n");
-    //printf("%s\n", msg_ret);
-    //send(sock, callback_buff, strlen(callback_buff), 0);
+    
     send(sock, akn_msg, strlen(akn_msg), 0);
     printf("%s \n", akn_msg);
     msg_type = 0;
@@ -163,9 +156,9 @@ void msg_proc(char* msg){
 
 
 int hex_to_dec(char *hex){
-int i;
-i = (int)strtol(hex, NULL, 16);
-return i;
+	int i;
+	i = (int)strtol(hex, NULL, 16);
+	return i;
 }
 
 
@@ -184,45 +177,46 @@ void akn_incr(char* msg){
     dig1 = strtol(buff1+1, NULL, 16);
     dig2 = strtol(buff2+2, NULL, 16);
 
-
-    //printf("%d %d \n", dig1, dig2);
-
     if(dig1 < 1 && dig2 < 15){
     dig2++;
     sprintf(akn_puff, "#%x%x +\n", dig1, dig2);
     }
+    
     else if(dig1 >= 1 && dig2 < 15){
         dig2++;
         sprintf(akn_puff, "#%x%x +\n", dig1, dig2);
     }
+    
     else if(dig1 < 15 && dig2 == 15){
         dig1++;
         dig2 = 0;
         sprintf(akn_puff, "#%x%x +\n", dig1, dig2);
     }
+    
     else{
         dig1 = 0;
         dig2 = 0;
         sprintf(akn_puff, "#%x%x +\n", dig1, dig2);
     }
+    
     strcpy(akn_msg, akn_puff);
 
 }
 
 int get_ric(void){
-return dapnet_ric;
+	return dapnet_ric;
 }
 
 int get_tx_flag(void){
-return dapnet_tx_flag;
+	return dapnet_tx_flag;
 }
 
 char *get_Nachricht(void){
-return msg_puff;
+	return msg_puff;
 }
 
 char *get_subric(void){
-return subric;
+	return subric;
 }
 
 void timeslot(void){
@@ -247,20 +241,22 @@ void timeslot(void){
 }
 
 void wait_until_timeslot(void){
-while(1){
-    time(&time_now);
-    tm_now = localtime(&time_now);
-    if((tm_now->tm_sec >= sek1_s && tm_now->tm_sec <= sek1_e) || (tm_now->tm_sec >= sek2_s && tm_now->tm_sec <= sek2_e) || (tm_now->tm_sec >= sek3_s && tm_now->tm_sec <= sek3_e)){
-        return;
-    }
-    system("sleep 0.5");
-}
+	
+	while(1){
+		time(&time_now);
+		tm_now = localtime(&time_now);
+		if((tm_now->tm_sec >= sek1_s && tm_now->tm_sec <= sek1_e) || (tm_now->tm_sec >= sek2_s && tm_now->tm_sec <= sek2_e) || (tm_now->tm_sec >= sek3_s && tm_now->tm_sec <= sek3_e)){
+			return;
+		}
+		system("sleep 0.5");
+	}
 
-if(tm_now->tm_min == 0){
-stunde_voll = 1;
-}
-if(tm_now->tm_min >= 3){
-stunde_voll = 0;
-}
+	if(tm_now->tm_min == 0){
+		stunde_voll = 1;
+	}
+	
+	if(tm_now->tm_min >= 3){
+		stunde_voll = 0;
+	}
 
 }
