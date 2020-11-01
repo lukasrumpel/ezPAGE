@@ -16,6 +16,9 @@
 #define BUFFSIZE 1000
 #define com_timeout 3
 
+#define freq_tx "4399875"
+#define pwr_tx "4"
+
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
 #define ANSI_COLOR_YELLOW  "\x1b[33m"
@@ -42,6 +45,7 @@ void manueller_modus(void);
 void abdeckungsmodus(void);
 void DAPNET_modus(char *comport);
 int comport_val(char *com);
+void init_ezPOC8(char *freq, char *pwr_lvl, char *cp);
 
 
 int main(int argc, char *argv[])
@@ -52,7 +56,7 @@ int main(int argc, char *argv[])
     cout << ANSI_COLOR_GREEN <<"\n\n*****************************************\n";
     cout << "***ezPAGE - Steuersoftware fuer ezPOC8***" << endl;
     cout << "*****************************************\n\n\n" << ANSI_COLOR_RESET;
-    
+    //init_ezPOC8(freq_tx , pwr_tx , "16");
 	if(argc > 1){
 		if(strcmp(argv[1], "-h") == 0){
 			help();
@@ -98,7 +102,7 @@ void kommando(char *adresse, char *subric, char* wdh, char *Nachricht, char *com
     int rpt = atoi(wdh);
     char buff[BUFFSIZE];
     char eot[] = "*~*";
-    
+
     cout << cp << endl;
     cmd = (char*)malloc(strlen(adresse) + strlen(subric) + strlen(wdh) + strlen(Nachricht) + 14);
     sprintf(cmd, "P %s %s %s %s \r", adresse, subric, wdh, Nachricht, comport);
@@ -172,7 +176,7 @@ void kommando_dapnet(char *adresse, char *subric, char* wdh, char *Nachricht, ch
 						buffer_e[c] = 0;
 						cout << buffer_e;
 						cout.flush();
-						
+
 						for (int i = 0; i < 1000; i++){
 							buff[i] = buffer_e[i];
 						}
@@ -199,7 +203,7 @@ void help(){
 	cout <<  ANSI_COLOR_CYAN <<"--------------------------------------------------------------------------------------\n";
 	cout << "\n'ezPAGE aaaaaaa s w 'nachricht' p'\n" << endl;
 	cout << "a -> Adresse 1 - 2.097.152" << endl;
-	cout << "s -> Subric 1 - 4" << endl;	
+	cout << "s -> Subric 1 - 4" << endl;
 	cout << "w -> Wiederholungen 0 - 9" << endl;
 	cout << "n -> Nachricht 0 - 160 Zeichen" << endl;
 	cout << "p -> serielle Schnittstelle wenn leer, dann ttyUSB0" << endl;
@@ -216,7 +220,7 @@ int nachricht_laenge(char *adresse){
 	int val = atoi(adresse);
 	int rest = val % 10;
 	int anz;
-	
+
 	switch(rest){
 		case 0:
 			anz = 76;
@@ -259,7 +263,7 @@ void nachrichten_bearbeitung(char *adresse, char *subric, char * wdh_n, char *Na
 	int zeichen = 0;
 	string sges, s1, s2, s3, s4, s5;
 	zeichen = nachricht_laenge(adresse);
-	
+
 	if(strlen(Nachricht) < zeichen){
         kommando(adresse, subric, wdh_n, Nachricht, comport);
     }
@@ -275,7 +279,7 @@ void nachrichten_bearbeitung(char *adresse, char *subric, char * wdh_n, char *Na
 				strcpy(cs1, s1.c_str());
 				char *cs2 = new char[s2.length() + 1];
 				strcpy(cs2, s2.c_str());
-			
+
 				for(int i = 0; i < wdh+1; i++){
 					kommando(adresse, subric, "0", cs1,  comport);
 					std::this_thread::sleep_for(std::chrono::seconds(5));
@@ -283,7 +287,7 @@ void nachrichten_bearbeitung(char *adresse, char *subric, char * wdh_n, char *Na
 					std::this_thread::sleep_for(std::chrono::seconds(5));
 					cout << endl;
 				}
-			
+
 				delete [] cs1;
 				delete [] cs2;
 			}
@@ -298,7 +302,7 @@ void nachrichten_bearbeitung(char *adresse, char *subric, char * wdh_n, char *Na
 				strcpy(cs2, s2.c_str());
 				char *cs3 = new char[s3.length() + 1];
 				strcpy(cs3, s3.c_str());
-			
+
 				for(int i = 0; i < wdh+1; i++){
 					kommando(adresse, subric, "0", cs1,  comport);
 					std::this_thread::sleep_for(std::chrono::seconds(5));
@@ -308,7 +312,7 @@ void nachrichten_bearbeitung(char *adresse, char *subric, char * wdh_n, char *Na
 					std::this_thread::sleep_for(std::chrono::seconds(5));
 					cout << endl;
 				}
-			
+
 				delete [] cs1;
 				delete [] cs2;
 				delete [] cs3;
@@ -327,7 +331,7 @@ void nachrichten_bearbeitung(char *adresse, char *subric, char * wdh_n, char *Na
 				strcpy(cs3, s3.c_str());
 				char *cs4 = new char[s4.length() + 1];
 				strcpy(cs4, s4.c_str());
-				
+
 				for(int i = 0; i < wdh+1; i++){
 					kommando(adresse, subric, "0", cs1,  comport);
 					std::this_thread::sleep_for(std::chrono::seconds(5));
@@ -339,14 +343,14 @@ void nachrichten_bearbeitung(char *adresse, char *subric, char * wdh_n, char *Na
 					std::this_thread::sleep_for(std::chrono::seconds(5));
 					cout << endl;
 				}
-				
+
 				delete [] cs1;
 				delete [] cs2;
 				delete [] cs3;
 				delete [] cs4;
 			}
 		}
-		
+
 	else{
         cout << "String > 160 Zeichen!" << endl;
     }
@@ -357,7 +361,7 @@ void nachrichten_bearbeitung_dapnet(char *adresse, char *subric, char * wdh_n, c
 	int zeichen = 0;
 	string sges, s1, s2, s3, s4, s5;
 	zeichen = nachricht_laenge(adresse);
-    
+
     if(strlen(Nachricht) < zeichen){
 		kommando_dapnet(adresse, subric, wdh_n, Nachricht, comport);
     }
@@ -373,7 +377,7 @@ void nachrichten_bearbeitung_dapnet(char *adresse, char *subric, char * wdh_n, c
 			strcpy(cs1, s1.c_str());
 			char *cs2 = new char[s2.length() + 1];
 			strcpy(cs2, s2.c_str());
-			
+
 			for(int i = 0; i < wdh+1; i++){
 				kommando_dapnet(adresse, subric, "0", cs1,  comport);
 				std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -381,7 +385,7 @@ void nachrichten_bearbeitung_dapnet(char *adresse, char *subric, char * wdh_n, c
 				std::this_thread::sleep_for(std::chrono::seconds(1));
 				cout << endl;
 			}
-			
+
 			delete [] cs1;
 			delete [] cs2;
         }
@@ -396,7 +400,7 @@ void nachrichten_bearbeitung_dapnet(char *adresse, char *subric, char * wdh_n, c
 			strcpy(cs2, s2.c_str());
 			char *cs3 = new char[s3.length() + 1];
 			strcpy(cs3, s3.c_str());
-			
+
 			for(int i = 0; i < wdh+1; i++){
 				kommando_dapnet(adresse, subric, "0", cs1,  comport);
 				std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -406,7 +410,7 @@ void nachrichten_bearbeitung_dapnet(char *adresse, char *subric, char * wdh_n, c
 				std::this_thread::sleep_for(std::chrono::seconds(1));
 				cout << endl;
 			}
-			
+
 			delete [] cs1;
 			delete [] cs2;
 			delete [] cs3;
@@ -425,7 +429,7 @@ void nachrichten_bearbeitung_dapnet(char *adresse, char *subric, char * wdh_n, c
 			strcpy(cs3, s3.c_str());
 			char *cs4 = new char[s4.length() + 1];
 			strcpy(cs4, s4.c_str());
-			
+
 			for(int i = 0; i < wdh+1; i++){
 				kommando_dapnet(adresse, subric, "0", cs1,  comport);
 				std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -437,14 +441,14 @@ void nachrichten_bearbeitung_dapnet(char *adresse, char *subric, char * wdh_n, c
 				std::this_thread::sleep_for(std::chrono::seconds(1));
 				cout << endl;
 			}
-			
+
 			delete [] cs1;
 			delete [] cs2;
 			delete [] cs3;
 			delete [] cs4;
         }
 	}
-	
+
     else{
 		cout << "String > 160 Zeichen!" << endl;
     }
@@ -460,7 +464,7 @@ void manueller_modus(void){
 	cin >> comport;
 	c_comport = new char[comport.length()+1];
 	strcpy(c_comport, comport.c_str());
-	
+    init_ezPOC8(freq_tx , pwr_tx , c_comport);
     while(adr != "x"){
         cout << ANSI_COLOR_CYAN << "Adresse: ";
         cin >> adr;
@@ -499,6 +503,7 @@ void abdeckungsmodus(void){
 	cin >> comport;
 	c_comport = new char[comport.length()+1];
 	strcpy(c_comport, comport.c_str());
+	init_ezPOC8(freq_tx , pwr_tx , c_comport);
 	cout << "Adresse: ";
 	cin >> adr;
 	cout << "Subric: ";
@@ -516,7 +521,7 @@ void abdeckungsmodus(void){
 	int periode;
 	cout << "Alle wie viele Sekunden soll die Nachricht gesendet werden?(min. 60s): ";
 	cin >> periode;
-	
+
     if(periode >= 60){
         while(1){
             nachrichten_bearbeitung(c_adr, c_subr, "0", c_Nachricht, c_comport);
@@ -524,7 +529,7 @@ void abdeckungsmodus(void){
             cout<< endl ;
         }
     }
-    
+
 	delete [] c_adr;
 	delete [] c_subr;
 	delete [] c_Nachricht;
@@ -539,7 +544,9 @@ void DAPNET_modus(char *com){
     int adresse;
     int senden;
     char ric[9];
-    
+
+    init_ezPOC8(freq_tx , pwr_tx , com);
+
     con_err = con_open();
     if (con_err != 0){
 		cerr << "Verbindung konnte nicht hergestellt werden!" << endl;
@@ -548,10 +555,10 @@ void DAPNET_modus(char *com){
     time_dummy();
     get_timeslot();
     timeslot();
-    
+
     printf("Zugewiesene Timeslots: %d %d %d\n", ts1, ts2, ts3);
     printf("SEkunden zum senden: Slot1: %d - %d  Slot2: %d - %d  Slot3: %d - %d \n\n", sek1_s, sek1_e, sek2_s, sek2_e, sek3_s, sek3_e);
-    
+
     while(1){
 		printf("Nachrichten werden geholt!\n");
 		message = get_msg();
@@ -564,30 +571,74 @@ void DAPNET_modus(char *com){
 			sprintf(ric, "%d", adresse);
 			senden = get_tx_flag();
 			printf("RIC: %d MSG_TYPE: %d\n\n", adresse, senden );
-			
+
 			if(senden == 6 && (adresse == 2504 || adresse == 200 ||adresse == 208 || adresse == 224 || adresse == 216)){
 				//nachrichten_bearbeitung_dapnet(ric, func, "0", Nachricht, com);
 			}
-			
+
 			else if((stunde_voll == 1) && (senden == 6 && (adresse == 2504 || adresse == 200 ||adresse == 208 || adresse == 224 || adresse == 216))){
 				nachrichten_bearbeitung_dapnet(ric, func, "0", Nachricht, com);
 			}
-			
+
 			else if(senden == 6){
 				//wait_until_timeslot();
 				nachrichten_bearbeitung_dapnet(ric, func, "0", Nachricht, com);
 			}
-			
+
 			printf("+++++++++++++++++++++++++++++++++++++++++++++++++++\n\n");
 			Nachricht[0] = '\0';
 			system("sleep 1s");
 		}
-		
+
 		else{
 			con_close();
 		}
     }
 
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
+void init_ezPOC8(char *freq, char *pwr_lvl, char *comport){
+    char* cmd;
+    int cp = atoi(comport);
+    char buff[BUFFSIZE];
+    char eot[] = "*~*";
+
+    cmd = (char *)malloc(strlen(freq) + strlen(pwr_lvl) + 2);
+    sprintf(cmd, "F%s%s\r", freq, pwr_lvl);
+    cout << cmd << endl;
+    if(RS232_OpenComport(cp, BAUDRATE, "8N1", 0) != 0){
+        cerr << "Fehler beim Oeffnen der seriellen Schnittstelle!";
+        exit(-1);
+    }
+
+    else{
+        RS232_cputs(cp, cmd);
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        while(true){
+        int c = RS232_PollComport(cp, buffer_e, BUFFSIZE);
+
+            if(0 != c){
+                buffer_e[c] = 0;
+                cout << buffer_e;
+                cout.flush();
+
+
+                for (int i = 0; i < 1000; i++){
+                    buff[i] = buffer_e[i];
+                }
+                if((strstr(buff, eot) || strstr(buff, "Format") || strstr(buff, "\0")) != 0){
+                    cout << "\n***Parameter geschrieben!***" << endl;
+                    break;
+                }
+            }
+
+        }
+        cout << "\n***Parameter geschrieben!***" << endl;
+    }
+    free(cmd);
+    RS232_CloseComport(cp);
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------
