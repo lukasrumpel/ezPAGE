@@ -74,6 +74,10 @@ int main(int argc, char *argv[])
 			cout << ANSI_COLOR_CYAN <<"**DAPNET-Modus**" << ANSI_COLOR_CYAN << endl << endl;
 			DAPNET_modus(argv[2]);
 		}
+		else if(strcmp(argv[1], "-c") == 0){
+			cout << ANSI_COLOR_CYAN <<"**Konfiguration wird geschrieben**" << ANSI_COLOR_CYAN << endl << endl;
+			init_ezPOC8(argv[2], argv[3], argv[4]);
+		}
 		else if((argc > 3)&&(argv[5] == 0)){
 			nachrichten_bearbeitung(argv[1], argv[2], argv[3], argv[4], "16");
 		}
@@ -200,19 +204,20 @@ void kommando_dapnet(char *adresse, char *subric, char* wdh, char *Nachricht, ch
 //---------------------------------------------------------------------------------------------------------------------------------------------
 void help(){
 
-	cout <<  ANSI_COLOR_CYAN <<"--------------------------------------------------------------------------------------\n";
+	cout <<  ANSI_COLOR_CYAN <<"--------------------------------------------------------------------------------------------------------------------------\n";
 	cout << "\n'ezPAGE aaaaaaa s w 'nachricht' p'\n" << endl;
 	cout << "a -> Adresse 1 - 2.097.152" << endl;
 	cout << "s -> Subric 1 - 4" << endl;
 	cout << "w -> Wiederholungen 0 - 9" << endl;
 	cout << "n -> Nachricht 0 - 160 Zeichen" << endl;
 	cout << "p -> serielle Schnittstelle wenn leer, dann ttyUSB0" << endl;
-	cout << "--------------------------------------------------------------------------------------\n";
+	cout << "--------------------------------------------------------------------------------------------------------------------------\n";
 	cout << "-h fuer Hilfe" << endl;
 	cout << "-m fuer manueller Modus (Beenden durch Eingabe von 'x' fuer Adresse)" << endl;
 	cout << "-r fuer Netzabdeckungsmodus (gibt periodische Nachricht aus)" << endl;
 	cout << "-d cc (comport) fuer DAPNETmodus (in DAPNET.h eingestellte Zugangsdaten werden verwendet)" << endl;
-	cout << "--------------------------------------------------------------------------------------\n";
+	cout << "-c fffffff (Frequenz, 7 Zeichen!!!) p (Powerlevel 1 - 8 [1 dBm - 20dBm] cc (comport) um das Sendemodul zu konfigurieren" << endl;
+	cout << "--------------------------------------------------------------------------------------------------------------------------\n";
 	cout << "2020 Lukas Rumpel DO4LR\n" << ANSI_COLOR_RESET;
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------
