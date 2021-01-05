@@ -221,7 +221,6 @@ char *get_subric(void){
 
 void timeslot(void){
 
-    char buff_ts[] = "4:2AF\n";
     char* buffer = (char*)malloc(1);
 
     sprintf(buffer, "%c", buff_ts[2]);
